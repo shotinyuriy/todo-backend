@@ -23,8 +23,13 @@ public class TodoRestResource {
 
     @PostMapping
     public ResponseEntity<Object> createTodoList(@RequestBody TodoList todoList) {
-        todoListRepository.save(todoList);
-        URI createdTodoListUri = URI.create("001");
-        return ResponseEntity.created(createdTodoListUri).build();
+        if (todoList != null) {
+            todoList.setId(TodoListRepository.ID_GENERATOR.getAndIncrement());
+            todoListRepository.save(todoList);
+            URI createdTodoListUri = URI.create("todo-lists/"+todoList);
+            return ResponseEntity.created(createdTodoListUri).build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
