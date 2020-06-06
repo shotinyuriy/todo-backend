@@ -3,5 +3,5 @@ server:
 spring:
   data:
     mongodb:
-      port: 8081
+      port: 27017
       database: todo

@@ -8,5 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public interface TodoListRepository extends CrudRepository<TodoList, Long>{
-    static AtomicLong ID_GENERATOR = new AtomicLong(1);
+    AtomicLong TODO_LIST_ID_GENERATOR = new AtomicLong(1);
+    AtomicLong TODO_ID_GENERATOR = new AtomicLong(1);
 }
+
