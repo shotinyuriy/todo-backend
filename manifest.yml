@@ -1,0 +1,14 @@
+applications:
+  - name: todo-rest-api
+    disk_quota: 1G
+    instances: 1
+    memory: 1G
+    path: build/libs/todo-rest-api-0.1.0-SNAPSHOT.jar
+    routes:
+      - route: todo-rest-api-101.cfapps.io
+    timeout: 120
+    buildpacks:
+      - https://github.com/cloudfoundry/java-buildpack.git
+    stack: cflinuxfs3
+    services:
+      - todo-mongo

@@ -3,6 +3,7 @@ package com.shotin.todobackend.service;
 import com.shotin.todobackend.model.ServiceResult;
 import com.shotin.todobackend.model.Todo;
 import com.shotin.todobackend.model.TodoList;
+import com.shotin.todobackend.model.ValidationError;
 import com.shotin.todobackend.repository.TodoListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,14 +11,12 @@ import org.springframework.stereotype.Service;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class TodoListService {
 
+    private final int MAX_ENTITIES = 20;
     private final TodoListRepository todoListRepository;
 
     private final Validator validator;
@@ -28,7 +27,11 @@ public class TodoListService {
     }
 
     public ServiceResult<TodoList> createTodoList(TodoList todoList) {
-        todoList.setId(TodoListRepository.TODO_LIST_ID_GENERATOR.incrementAndGet());
+        if (todoListRepository.count() >= MAX_ENTITIES) {
+            ValidationError error = new ValidationError("todoLists.size", "не больше "+MAX_ENTITIES);
+            return new ServiceResult<TodoList>(null, Collections.singleton(error));
+        }
+        todoList.setId(TodoListRepository.TODO_LIST_ID_GENERATOR.getAndIncrement());
         todoList.setCreatedAt(LocalDateTime.now());
         Set<ConstraintViolation<TodoList>> violations = validator.validate(todoList);
         if (violations != null && !violations.isEmpty()) {
@@ -49,6 +52,10 @@ public class TodoListService {
     }
 
     public ServiceResult<Todo> createTodoForTodoList(TodoList todoList, Todo todo) {
+        if (todoList.getTodos().size() >= MAX_ENTITIES) {
+            ValidationError error = new ValidationError("todoLists.todos.size", "не больше "+MAX_ENTITIES);
+            return new ServiceResult<Todo>(null, Collections.singleton(error));
+        }
         todo.setId(todoListRepository.TODO_ID_GENERATOR.getAndIncrement());
         Set<ConstraintViolation<Todo>> violations = validator.validate(todo);
         if (violations != null && !violations.isEmpty()) {
