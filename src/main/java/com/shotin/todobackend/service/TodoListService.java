@@ -67,4 +67,15 @@ public class TodoListService {
         }
 
     }
+
+    public boolean deleteTodoById(TodoList todoList, Long todoId) {
+        Optional<Todo> optTodo = todoList.getTodos().stream()
+                .filter(td -> todoId.equals(td.getId()))
+                .findFirst();
+        optTodo.ifPresent((todo) ->{
+            todoList.getTodos().remove(todo);
+            todoListRepository.save(todoList);
+        });
+        return optTodo.isPresent();
+    }
 }

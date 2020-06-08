@@ -88,4 +88,20 @@ public class TodoRestResource {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @ApiOperation(value = "Удаляет дело по todoId из списка")
+    @DeleteMapping("/{todoListId}/todos/{todoId}")
+    public ResponseEntity<Object> deleteTodoFromTodoListById(@PathVariable Long todoListId, @PathVariable Long todoId) {
+        Optional<TodoList> todoList = todoListService.findTodoListById(todoListId);
+        if (todoList.isPresent()) {
+            boolean deleted = todoListService.deleteTodoById(todoList.get(), todoId);
+            if (deleted) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
